@@ -1,0 +1,30 @@
+name: flutter_ble_gateway
+description: A Flutter BLE Gateway application that bridges Android notifications to a BLE smartwatch prototype.
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # BLE communication
+  flutter_blue_plus: ^1.35.3
+
+  # State management
+  provider: ^6.1.2
+
+  # Permissions handling
+  permission_handler: ^11.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AndroidManifest.xml for the Flutter BLE Gateway application.
+
+    ═══════════════════════════════════════════════════════════════
+    REQUIRED PERMISSIONS (summary)
+    ═══════════════════════════════════════════════════════════════
+
+    Bluetooth (Android 12+ / API 31+):
+      • BLUETOOTH_SCAN        – scan for nearby BLE devices
+      • BLUETOOTH_CONNECT     – connect to / communicate with BLE devices
+      • BLUETOOTH_ADVERTISE   – not used here, included for completeness
+
+    Bluetooth (Android < 12 / API < 31):
+      • BLUETOOTH              – legacy; required on older devices
+      • BLUETOOTH_ADMIN        – legacy; required on older devices
+      • ACCESS_FINE_LOCATION   – required to scan BLE on API < 31
+
+    Notification Listener:
+      • BIND_NOTIFICATION_LISTENER_SERVICE – declared on the service element
+        (not a <uses-permission>); the user must explicitly grant access via
+        Settings → Apps → Special app access → Notification access.
+    ═══════════════════════════════════════════════════════════════
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ── Bluetooth permissions ───────────────────────────────────────── -->
+
+    <!-- Android 12+ (API 31+) fine-grained Bluetooth permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Legacy Bluetooth permissions for Android < 12 (API < 31) -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <!-- Location required for BLE scanning on Android < 12 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="30" />
+
+    <!-- Required to keep the BLE connection alive while the screen is off -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Declare that the app uses BLE (makes it invisible on devices without BLE) -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+
+    <application
+        android:label="BLE Gateway"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <!-- ── Flutter activity ──────────────────────────────────────────── -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ── Notification Listener Service ─────────────────────────────── -->
+        <!--
+            IMPORTANT: android:permission must be set to
+            android.permission.BIND_NOTIFICATION_LISTENER_SERVICE so that only
+            the system can bind to this service.
+
+            The user must separately grant notification access via:
+              Settings → Apps → Special app access → Notification access
+            The app will prompt the user to do this on first launch via
+            MainActivity.isNotificationServiceEnabled().
+        -->
+        <service
+            android:name=".GatewayNotificationListenerService"
+            android:label="BLE Gateway Notification Service"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+    </application>
+</manifest>
